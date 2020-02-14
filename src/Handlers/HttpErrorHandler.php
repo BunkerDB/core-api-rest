@@ -41,6 +41,7 @@ class HttpErrorHandler extends SlimErrorHandler
     public function __construct(ContainerInterface $container, CallableResolverInterface $callableResolver, ResponseFactoryInterface $responseFactory)
     {
         $this->container = $container;
+        $this->displayErrorDetails = $container->get('settings')['displayErrorDetails'];
         parent::__construct($callableResolver, $responseFactory);
     }
 
