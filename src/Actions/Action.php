@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Cratia\Rest\Actions;
 
 use Cratia\Pipeline;
+use Cratia\Rest\Dependencies\DebugBag;
 use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Slim\Exception\HttpBadRequestException;
 
 /**
@@ -103,9 +105,7 @@ abstract class Action
             $time = -microtime(true);
             return Pipeline::try(
                 function () use (&$time) {
-                    $result = $this->action();
-                    $time += microtime(true);
-                    return $result;
+                    return $this->invokeAction();
                 })
                 ->then(function ($data = null) {
                     return $this->createActionDataPayload($data);
@@ -115,6 +115,15 @@ abstract class Action
                 })
                 ->then(function (Response $response) {
                     return $response;
+                })
+                ->tap(function () use (&$time) {
+                    $time += microtime(true);
+                })
+                ->tap(function () use ($time) {
+                    $this->addDebugBag($time);
+                })
+                ->tap(function () use ($time) {
+                    $this->log(LogLevel::INFO, __CLASS__ . "::action() [{$time}]");
                 })
                 ->catch(function (Exception $e) {
                     throw $e;
@@ -130,6 +139,20 @@ abstract class Action
      * @throws Exception
      */
     abstract protected function action();
+
+    /**
+     * @return array|object
+     * @throws Exception
+     */
+    protected function invokeAction()
+    {
+        try {
+            $result = $this->action();
+            return $result;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), $e->getCode(), $e->getPrevious());
+        }
+    }
 
     /**
      * @return array|object
@@ -178,5 +201,26 @@ abstract class Action
         $json = json_encode($payload, JSON_PRETTY_PRINT);
         $this->getResponse()->getBody()->write($json);
         return $this->getResponse()->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
+     * @param int $time
+     */
+    protected function addDebugBag(int $time): void
+    {
+        if ($this->getContainer()->has(DebugBag::class)) {
+            /** @var DebugBag $debugBag */
+            $debugBag = $this->getContainer()->get(DebugBag::class);
+            $debugBag->addRunTime(__CLASS__ . '::action()', $time);
+        }
+    }
+
+    /**
+     * @param string $level
+     * @param string $message
+     */
+    protected function log(string $level, string $message): void
+    {
+        $this->getLogger()->log($level, $message);
     }
 }

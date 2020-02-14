@@ -11,7 +11,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\App;
 use Slim\Interfaces\RouteInterface;
 use Slim\Routing\Route;
 use Slim\Routing\RouteContext;
@@ -59,17 +58,19 @@ class RouteInfo implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($this->getContainer()->has(AppManager::class)) {
+        /** @var RouteContext $routeContext */
+        $routeContext = RouteContext::fromRequest($request);
+        /** @var Route $route */
+        $route = $routeContext->getRoute();
+
+        if ($this->getContainer()->has(AppManager::class) &&
+            ($route instanceof RouteInterface)
+        ) {
             /** @var AppManager $appManager */
             $appManager = $this->getContainer()->has(AppManager::class);
-            /** @var RouteContext $routeContext */
-            $routeContext = RouteContext::fromRequest($request);
-            /** @var Route $route */
-            $route = $routeContext->getRoute();
-            if ($route instanceof RouteInterface) {
-                $appManager->setRoute($route);
-            }
+            $appManager->setRoute($route);
         }
+
         $response = $handler->handle($request);
         return $response;
     }

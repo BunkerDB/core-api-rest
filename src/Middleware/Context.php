@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cratia\Rest\Middleware;
 
+use Cratia\Rest\ContextNull;
 use Cratia\Rest\Dependencies\AppManager;
 use Cratia\Rest\Interfaces\IContext;
 use Psr\Container\ContainerInterface;
@@ -61,7 +62,7 @@ class Context implements MiddlewareInterface
             if ($request->hasHeader(IContext::CONTEXT_HEADER)) {
                 $appManager->setContext(\Cratia\Rest\Context::createByRequest($request));
             } else {
-                $appManager->setContext(new \Cratia\Rest\ContextNull());
+                $appManager->setContext(new ContextNull());
             }
         }
         $response = $handler->handle($request);
