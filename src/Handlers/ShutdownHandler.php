@@ -36,7 +36,6 @@ class ShutdownHandler
         return $this->container;
     }
 
-
     public function __invoke()
     {
         $error = error_get_last();

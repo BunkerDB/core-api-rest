@@ -102,7 +102,7 @@ class ErrorManager
      */
     public function registerShutdownHandler(App $app)
     {
-        $shutdownHandler = new ShutdownHandler($app->getContainer()->get('settings')['displayErrorDetails']);
+        $shutdownHandler = new ShutdownHandler($app->getContainer());
         register_shutdown_function($shutdownHandler);
     }
 }
