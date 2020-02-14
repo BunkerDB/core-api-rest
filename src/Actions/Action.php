@@ -176,7 +176,7 @@ abstract class Action
     protected function createResponse(ActionDataPayload $payload): Response
     {
         $json = json_encode($payload, JSON_PRETTY_PRINT);
-        $this->getRequest()->getBody()->write($json);
+        $this->getResponse()->getBody()->write($json);
         return $this->getResponse()->withHeader('Content-Type', 'application/json');
     }
 }
