@@ -67,7 +67,7 @@ class RouteInfo implements MiddlewareInterface
             ($route instanceof RouteInterface)
         ) {
             /** @var AppManager $appManager */
-            $appManager = $this->getContainer()->has(AppManager::class);
+            $appManager = $this->getContainer()->get(AppManager::class);
             $appManager->setRoute($route);
         }
 

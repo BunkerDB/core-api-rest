@@ -13,11 +13,12 @@ use Cratia\Rest\Actions\Action;
  */
 class Ping extends Action
 {
+    const DATA = ['status' => 'ok'];
     /**
      * @inheritDoc
      */
     protected function action()
     {
-        return ['status' => 'ok'];
+        return self::DATA;
     }
 }

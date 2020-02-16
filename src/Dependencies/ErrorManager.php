@@ -6,8 +6,8 @@ namespace Cratia\Rest\Dependencies;
 
 
 use Cratia\Rest\Handlers\ShutdownHandler;
-use Slim\App;
-use StdClass;
+use DI\Container;
+use stdClass;
 
 /**
  * Class ErrorManager
@@ -48,14 +48,14 @@ class ErrorManager
 
     /**
      * Callback for error handling
-     * @param $errno
-     * @param $errstr
+     * @param int $errno
+     * @param string $errstr
      * @param string $errfile
-     * @param null $errline
+     * @param int $errline
      * @param array $errcontext
      * @return void
      */
-    public static function registerError($errno, $errstr, $errfile = '', $errline = null, $errcontext = [])
+    public function registerError(int $errno, string $errstr, string $errfile = null, int $errline = null, array $errcontext = null)
     {
         $strErrCode = [
             1 => "E_ERROR",
@@ -76,7 +76,7 @@ class ErrorManager
             32767 => "E_ALL"
         ];
 
-        $s = new StdClass();
+        $s = new stdClass();
         $s->code = $strErrCode[$errno] . " ({$errno})";
         $s->message = $errstr;
         $s->file = $errfile;
@@ -87,22 +87,25 @@ class ErrorManager
 
     /**
      * Log php errors to attach in output
-     * @param App $app
+     * @param Container $container
      * @param int $error_types default E_ALL | E_STRICT
      */
-    public function registerErrorHandler(App $app, $error_types = null)
+    public function registerErrorHandler(Container $container, $error_types = null)
     {
         $error_types = is_null($error_types) ? (E_ALL | E_STRICT) : $error_types;
-        set_error_handler(['self', 'registerError'], $error_types);
+        set_error_handler(
+            function (int $errno, string $errstr, string $errfile = null, int $errline = null, array $errcontext = null) {
+                $this->registerError($errno, $errstr, $errfile, $errline, $errcontext);
+            }, $error_types);
     }
 
     /**
-     * @param App $app
+     * @param Container $container
      * @return void
      */
-    public function registerShutdownHandler(App $app)
+    public function registerShutdownHandler(Container $container)
     {
-        $shutdownHandler = new ShutdownHandler($app->getContainer());
+        $shutdownHandler = new ShutdownHandler($container);
         register_shutdown_function($shutdownHandler);
     }
 }

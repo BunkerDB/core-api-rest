@@ -102,9 +102,12 @@ abstract class Action
         $this->args = $args;
 
         try {
-            $time = -microtime(true);
-            return Pipeline::try(
-                function () use (&$time) {
+            return Pipeline::try(function () {
+            })
+                ->tap(function () {
+                    $this->log(LogLevel::INFO, get_class($this) . '::__invoke(...)');
+                })
+                ->then(function () {
                     return $this->invokeAction();
                 })
                 ->then(function ($data = null) {
@@ -115,15 +118,6 @@ abstract class Action
                 })
                 ->then(function (Response $response) {
                     return $response;
-                })
-                ->tap(function () use (&$time) {
-                    $time += microtime(true);
-                })
-                ->tap(function () use ($time) {
-                    $this->addDebugBag($time);
-                })
-                ->tap(function () use ($time) {
-                    $this->log(LogLevel::INFO, __CLASS__ . "::action() [{$time}]");
                 })
                 ->catch(function (Exception $e) {
                     throw $e;
@@ -147,7 +141,10 @@ abstract class Action
     protected function invokeAction()
     {
         try {
+            $time = -microtime(true);
             $result = $this->action();
+            $time += microtime(true);
+            $this->addRunTime($time);
             return $result;
         } catch (Exception $e) {
             throw new Exception($e->getMessage(), $e->getCode(), $e->getPrevious());
@@ -204,14 +201,14 @@ abstract class Action
     }
 
     /**
-     * @param int $time
+     * @param $time
      */
-    protected function addDebugBag(int $time): void
+    protected function addRunTime($time): void
     {
         if ($this->getContainer()->has(DebugBag::class)) {
             /** @var DebugBag $debugBag */
             $debugBag = $this->getContainer()->get(DebugBag::class);
-            $debugBag->addRunTime(__CLASS__ . '::action()', $time);
+            $debugBag->addRunTime(get_class($this) . '::action()', $time);
         }
     }
 
@@ -219,7 +216,7 @@ abstract class Action
      * @param string $level
      * @param string $message
      */
-    protected function log(string $level, string $message): void
+    protected function log(string $level, string $message = ''): void
     {
         $this->getLogger()->log($level, $message);
     }

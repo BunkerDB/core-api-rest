@@ -3,21 +3,24 @@
     "description": "Core for quickly start working on a new Slim Framework 4 application. This application uses the latest Slim 4 with Slim PSR-7 implementation and PHP-DI container implementation.",
     "type": "library",
     "require": {
+        "php": ">=7.1",
+        "ext-json": "*",
+        "cratia/pipeline": ">=0.7",
+        "php-di/php-di": "^6.0",
         "psr/container": "^1.0",
         "psr/log": "^1.1",
         "slim/slim": "^4.4",
-        "cratia/pipeline": ">=0.7",
-        "ext-json": "*",
-        "php": ">=7.1"
+        "slim/psr7": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "monolog/monolog": "^2.0"
     },
     "license": "MIT",
     "authors": [
         {
             "name": "Carlos Ratia",
-            "email": "carlos.ratia@bunkerdb.com"
+            "email": "cratia.github@gmail.com"
         }
     ],
     "minimum-stability": "stable",
@@ -30,8 +33,11 @@
         }
     },
     "autoload-dev": {
+        "classmap": [
+            "src/"
+        ],
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\Cratia\\Rest\\": "tests/"
         }
     }
 }
