@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Cratia\Rest\Dependencies\AppManager;
 use Cratia\Rest\Dependencies\DebugBag;
 use Cratia\Rest\Dependencies\ErrorBag;
 use Cratia\Rest\Dependencies\ErrorManager;
@@ -33,16 +34,20 @@ return function (ContainerBuilder $containerBuilder) {
             return $logger;
         },
 
-        ErrorManager::class => function (ContainerInterface $c) {
+        ErrorManager::class => function () {
             return ErrorManager::getInstance();
         },
 
-        ErrorBag::class => function (ContainerInterface $c) {
+        ErrorBag::class => function () {
             return ErrorBag::getInstance();
         },
 
-        DebugBag::class => function (ContainerInterface $c) {
+        DebugBag::class => function () {
             return DebugBag::getInstance();
-        }
+        },
+
+        AppManager::class => function () {
+            return AppManager::getInstance();
+        },
     ]);
 };

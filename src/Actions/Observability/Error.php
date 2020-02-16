@@ -14,12 +14,14 @@ use Exception;
  */
 class Error extends Action
 {
+    const ERROR_MESSAGE = __METHOD__;
+
     /**
      * @inheritDoc
      * @throws Exception
      */
     protected function action()
     {
-        throw new Exception(__METHOD__ . '::' . __LINE__);
+        throw new Exception(self::ERROR_MESSAGE);
     }
 }

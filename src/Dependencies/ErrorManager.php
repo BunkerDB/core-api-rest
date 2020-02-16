@@ -6,7 +6,7 @@ namespace Cratia\Rest\Dependencies;
 
 
 use Cratia\Rest\Handlers\ShutdownHandler;
-use DI\Container;
+use Psr\Container\ContainerInterface;
 use stdClass;
 
 /**
@@ -87,10 +87,10 @@ class ErrorManager
 
     /**
      * Log php errors to attach in output
-     * @param Container $container
+     * @param ContainerInterface $container
      * @param int $error_types default E_ALL | E_STRICT
      */
-    public function registerErrorHandler(Container $container, $error_types = null)
+    public function registerErrorHandler(ContainerInterface $container, $error_types = null)
     {
         $error_types = is_null($error_types) ? (E_ALL | E_STRICT) : $error_types;
         set_error_handler(
@@ -100,10 +100,10 @@ class ErrorManager
     }
 
     /**
-     * @param Container $container
+     * @param ContainerInterface $container
      * @return void
      */
-    public function registerShutdownHandler(Container $container)
+    public function registerShutdownHandler(ContainerInterface $container)
     {
         $shutdownHandler = new ShutdownHandler($container);
         register_shutdown_function($shutdownHandler);

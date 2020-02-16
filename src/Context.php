@@ -150,18 +150,30 @@ class Context implements IContext, JsonSerializable
 
         // PERIOD_START
         try {
-            $payload->{self::PERIOD_START} = (isset($data[self::PERIOD_START]))
-                ? new DateTime($data[self::PERIOD_START])
-                : false;
+            if (isset($data[self::PERIOD_START])) {
+                if ($data[self::PERIOD_START] instanceof DateTime) {
+                    $payload->{self::PERIOD_START} = $data[self::PERIOD_START];
+                } else {
+                    $payload->{self::PERIOD_START} = new DateTime($data[self::PERIOD_START]);
+                }
+            } else {
+                $payload->{self::PERIOD_START} = false;
+            }
         } catch (Exception $e) {
             $payload->{self::PERIOD_START} = false;
         }
 
         // PERIOD_END
         try {
-            $payload->{self::PERIOD_END} = (isset($data[self::PERIOD_END]))
-                ? new DateTime($data[self::PERIOD_END])
-                : false;
+            if (isset($data[self::PERIOD_END])) {
+                if ($data[self::PERIOD_END] instanceof DateTime) {
+                    $payload->{self::PERIOD_END} = $data[self::PERIOD_END];
+                } else {
+                    $payload->{self::PERIOD_END} = new DateTime($data[self::PERIOD_END]);
+                }
+            } else {
+                $payload->{self::PERIOD_END} = false;
+            }
         } catch (Exception $e) {
             $payload->{self::PERIOD_END} = false;
         }
