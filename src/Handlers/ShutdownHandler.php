@@ -40,7 +40,9 @@ class ShutdownHandler
     {
         $error = error_get_last();
         if (!is_null($error) && is_array($error)) {
-            ob_end_clean();
+            if (ob_get_length()) {
+                ob_clean();
+            }
             header('Content-Type: application/json');
             http_response_code(500);
             $payload['errorType'] = "FATAL ERROR: {$error['message']}. ";
