@@ -134,6 +134,5 @@ class ErrorTest extends TestCase
         $this->assertIsArray($payload['error']);
         $this->assertIsArray($payload['debug']);
         $this->assertEquals(ActionError::NOT_ALLOWED, $payload['error']['type']);
-        //$this->assertEquals($e->getMessage(), $payload['error']['description']);
     }
 }
