@@ -91,7 +91,11 @@ class HttpErrorHandler extends SlimErrorHandler
             && ($exception instanceof Exception || $exception instanceof Throwable)
             && $this->displayErrorDetails
         ) {
+            if ($exception->getCode() >= 200 && $exception->getCode() < 600){
+               $statusCode = $exception->getCode();
+            }
             $error
+                ->setCode($statusCode)
                 ->setDescription($exception->getMessage())
                 ->setExtraInfo(
                     [
