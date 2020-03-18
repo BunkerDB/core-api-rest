@@ -10,7 +10,9 @@
         "psr/container": "^1.0",
         "psr/log": "^1.1",
         "slim/slim": "^4.4",
-        "slim/psr7": "^1.0"
+        "slim/psr7": "^1.0",
+        "doctrine/event-manager": "^1.1",
+        "cratia/orm-model": ">=0.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
